@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kế hoạch Chuyển đổi Dữ liệu ATAD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active {
+            color: #2563eb; /* blue-600 */
+            border-bottom-color: #2563eb;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .card-enter {
+            animation: card-enter 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes card-enter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="min-h-screen flex flex-col">
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <span class="font-bold text-xl text-blue-600">ATAD</span>
+                        <span class="ml-2 font-semibold text-slate-600">Data Strategy</span>
+                    </div>
+                    <div class="hidden md:flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-blue-600">Tổng quan</a>
+                        <a href="#architecture" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-blue-600">Kiến trúc</a>
+                        <a href="#platforms" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-blue-600">Nền tảng & Chi phí</a>
+                        <a href="#roadmap" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-blue-600">Lộ trình & Rủi ro</a>
+                        <a href="#applications" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-blue-600">Ứng dụng</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <section id="overview" class="section">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">Kế hoạch Chuyển đổi Dữ liệu ATAD</h1>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Hợp nhất dữ liệu phân tán, xây dựng nền tảng Lakehouse vững chắc để thúc đẩy phân tích chuyên sâu và đổi mới bằng AI.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-bold text-slate-900 text-center">Thách thức Hiện tại: Dữ liệu Phân mảnh & Silo</h2>
+                        <p class="text-center text-slate-500 mt-2">Dữ liệu nằm rải rác ở Salesforce, SAP, Excel... tạo ra nhiều rào cản lớn.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+                            <!-- Card 1: Thiếu cái nhìn toàn diện -->
+                            <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-red-400">
+                                <div class="flex items-center">
+                                    <span class="text-3xl mr-3">🔭</span>
+                                    <h3 class="font-semibold text-slate-800">Thiếu Tầm Nhìn 360°</h3>
+                                </div>
+                                <p class="mt-2 text-sm text-slate-600">Dữ liệu không kết nối khiến ban lãnh đạo không có cái nhìn toàn diện về khách hàng và vận hành.</p>
+                            </div>
+                    
+                            <!-- Card 2: Báo cáo khó khăn -->
+                            <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-orange-400">
+                                <div class="flex items-center">
+                                    <span class="text-3xl mr-3">📉</span>
+                                    <h3 class="font-semibold text-slate-800">Báo Cáo Thiếu Tin Cậy</h3>
+                                </div>
+                                <p class="mt-2 text-sm text-slate-600">Tổng hợp thủ công từ nhiều nguồn (Excel, SAP) tốn thời gian, dễ sai sót và không nhất quán.</p>
+                            </div>
+                    
+                            <!-- Card 3: Data Silos -->
+                            <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                                <div class="flex items-center">
+                                    <span class="text-3xl mr-3">🧱</span>
+                                    <h3 class="font-semibold text-slate-800">"Data Silos" Trì Trệ</h3>
+                                </div>
+                                <p class="mt-2 text-sm text-slate-600">Các phòng ban hoạt động trên dữ liệu riêng, cản trở sự hợp tác và làm chậm quá trình ra quyết định.</p>
+                            </div>
+                    
+                            <!-- Card 4: Kìm hãm đổi mới -->
+                            <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-purple-400">
+                                <div class="flex items-center">
+                                    <span class="text-3xl mr-3">💡</span>
+                                    <h3 class="font-semibold text-slate-800">Kìm Hãm Đổi Mới</h3>
+                                </div>
+                                <p class="mt-2 text-sm text-slate-600">Nền tảng rời rạc là rào cản lớn cho việc triển khai các ứng dụng AI và Machine Learning tiên tiến.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-2 border-blue-500">
+                        <h2 class="text-2xl font-bold text-slate-900">Giải pháp & Mục tiêu Chiến lược</h2>
+                        <p class="mt-4 text-slate-600">Triển khai kiến trúc <strong class="font-semibold text-blue-600">Lakehouse</strong> tập trung để:</p>
+                         <ul class="mt-4 space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-3 mt-1">✓</span>
+                                <span>Tạo ra một <strong class="font-semibold">"nguồn sự thật duy nhất" (Single Source of Truth)</strong>, phá vỡ các silo dữ liệu.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-3 mt-1">✓</span>
+                                <span>Hỗ trợ các phòng ban (Nhân sự, Sản xuất, Tài chính...) thực hiện <strong class="font-semibold">báo cáo và phân tích chuyên sâu</strong>.</span>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-green-500 mr-3 mt-1">✓</span>
+                                <span>Đặt nền móng vững chắc, dễ dàng mở rộng cho các sáng kiến <strong class="font-semibold">AI và Khoa học Dữ liệu</strong> trong tương lai.</span>
+                            </li>
+                        </ul>
+                        <p class="mt-6 text-sm text-slate-500 italic">Đây là một bước đi chiến lược mang tính chuyển đổi, giúp ATAD tăng cường năng lực cạnh tranh và hiện thực hóa mục tiêu chuyển đổi số toàn diện.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture" class="section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Tổng quan về Kiến trúc Dữ liệu</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-4xl mx-auto">Trước khi đi vào chi tiết, hãy cùng tìm hiểu về các kiến trúc phổ biến và lý do tại sao Lakehouse là lựa chọn chiến lược cho ATAD.</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-slate-700">Data Warehouse</h3>
+                        <p class="mt-2 text-sm text-slate-600">Lưu trữ dữ liệu có cấu trúc, đã qua xử lý. Rất mạnh mẽ cho việc truy vấn và tạo báo cáo BI, nhưng kém linh hoạt với dữ liệu phi cấu trúc và các tác vụ AI/ML.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-slate-700">Data Lake</h3>
+                        <p class="mt-2 text-sm text-slate-600">Lưu trữ mọi loại dữ liệu (có cấu trúc, phi cấu trúc) ở dạng thô. Rất linh hoạt và phù hợp cho AI/ML, nhưng có thể trở thành "data swamp" (đầm lầy dữ liệu) nếu không được quản trị tốt.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-blue-500">
+                        <h3 class="text-xl font-bold text-blue-600">Tại sao chọn Lakehouse?</h3>
+                        <p class="mt-2 text-sm text-slate-600"><strong>Lakehouse</strong> kết hợp những gì tốt nhất của cả hai: độ tin cậy và hiệu suất của Data Warehouse với sự linh hoạt, chi phí thấp của Data Lake. Nó cho phép ATAD chạy cả báo cáo BI và các mô hình AI trên cùng một nền tảng dữ liệu duy nhất.</p>
+                    </div>
+                </div>
+
+                <div class="text-center mb-12 pt-8 border-t">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Kiến trúc Lakehouse Medallion</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Một phương pháp tiếp cận theo lớp để tinh chỉnh dữ liệu, đảm bảo chất lượng và độ tin cậy từ dữ liệu thô đến dữ liệu sẵn sàng cho phân tích.</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-center items-stretch gap-4 md:gap-0">
+                    <div class="medallion-card flex-1 p-6 bg-white rounded-xl md:rounded-r-none shadow-lg border-l-8 border-yellow-400 cursor-pointer" data-details="architecture-bronze">
+                        <h3 class="text-2xl font-bold text-yellow-600">Bronze</h3>
+                        <p class="font-semibold text-slate-700 mt-1">Raw Data Zone</p>
+                        <p class="text-slate-500 mt-2 text-sm">Lưu trữ dữ liệu thô, nguyên trạng từ các hệ thống nguồn. Đảm bảo tính bất biến và khả năng truy vết.</p>
+                    </div>
+                    <div class="flex items-center justify-center text-4xl text-slate-400 font-light mx-4 my-4 md:my-0">→</div>
+                    <div class="medallion-card flex-1 p-6 bg-white rounded-xl shadow-lg border-l-8 border-gray-400 cursor-pointer" data-details="architecture-silver">
+                        <h3 class="text-2xl font-bold text-gray-600">Silver</h3>
+                        <p class="font-semibold text-slate-700 mt-1">Curated Data Zone</p>
+                        <p class="text-slate-500 mt-2 text-sm">Dữ liệu được làm sạch, chuẩn hóa, hợp nhất và làm giàu. Áp dụng các quy tắc kinh doanh.</p>
+                    </div>
+                     <div class="flex items-center justify-center text-4xl text-slate-400 font-light mx-4 my-4 md:my-0">→</div>
+                    <div class="medallion-card flex-1 p-6 bg-white rounded-xl md:rounded-l-none shadow-lg border-l-8 border-blue-500 cursor-pointer" data-details="architecture-gold">
+                        <h3 class="text-2xl font-bold text-blue-600">Gold</h3>
+                        <p class="font-semibold text-slate-700 mt-1">Aggregated Data Zone</p>
+                        <p class="text-slate-500 mt-2 text-sm">Dữ liệu đã được tổng hợp, tối ưu hóa cho phân tích, BI, và các mô hình Machine Learning.</p>
+                    </div>
+                </div>
+
+                <div id="architecture-details-panel" class="mt-8 bg-blue-50 p-8 rounded-xl min-h-[200px] transition-all duration-500">
+                    <div id="architecture-default" class="architecture-detail-content">
+                        <h4 class="text-xl font-bold text-slate-800">Chi tiết các Lớp Dữ liệu</h4>
+                        <p class="mt-2 text-slate-600">Nhấp vào một lớp (Bronze, Silver, hoặc Gold) ở trên để xem chi tiết về mục đích, nguồn dữ liệu và các quá trình xử lý liên quan. Kiến trúc này đảm bảo một luồng dữ liệu có cấu trúc, đáng tin cậy và sẵn sàng cho các nhu cầu phân tích đa dạng của ATAD.</p>
+                    </div>
+                    <div id="architecture-bronze" class="architecture-detail-content hidden">
+                        <h4 class="text-xl font-bold text-yellow-600">Chi tiết Lớp Bronze</h4>
+                        <ul class="mt-2 list-disc list-inside text-slate-600 space-y-1">
+                            <li><strong>Mục đích:</strong> Vùng hạ cánh (landing zone) cho dữ liệu thô.</li>
+                            <li><strong>Đặc điểm:</strong> Dữ liệu được giữ nguyên trạng, không thay đổi so với nguồn.</li>
+                            <li><strong>Công nghệ:</strong> ETL/ELT pipelines (Data Factory, AWS Glue) để thu nạp dữ liệu từ Salesforce, SAP, etc. vào các kho lưu trữ đối tượng (OneLake, S3, ADLS Gen2).</li>
+                            <li><strong>Giá trị:</strong> Đảm bảo khả năng tái tạo và kiểm tra dữ liệu gốc.</li>
+                        </ul>
+                    </div>
+                    <div id="architecture-silver" class="architecture-detail-content hidden">
+                        <h4 class="text-xl font-bold text-gray-600">Chi tiết Lớp Silver</h4>
+                        <ul class="mt-2 list-disc list-inside text-slate-600 space-y-1">
+                            <li><strong>Mục đích:</strong> Lớp dữ liệu đã được tinh chỉnh và làm sạch.</li>
+                            <li><strong>Đặc điểm:</strong> Dữ liệu được chuẩn hóa, xử lý giá trị thiếu, loại bỏ trùng lặp, và kết hợp từ nhiều nguồn.</li>
+                            <li><strong>Công nghệ:</strong> Apache Spark, Dataflow để thực hiện các phép biến đổi. Lưu trữ dưới dạng bảng Delta Lake để đảm bảo tính toàn vẹn (ACID).</li>
+                            <li><strong>Giá trị:</strong> Cung cấp một nguồn dữ liệu đáng tin cậy, đã qua kiểm duyệt cho các nhà phân tích.</li>
+                        </ul>
+                    </div>
+                    <div id="architecture-gold" class="architecture-detail-content hidden">
+                        <h4 class="text-xl font-bold text-blue-600">Chi tiết Lớp Gold</h4>
+                        <ul class="mt-2 list-disc list-inside text-slate-600 space-y-1">
+                             <li><strong>Mục đích:</strong> Lớp dữ liệu tổng hợp, sẵn sàng cho người dùng cuối.</li>
+                            <li><strong>Đặc điểm:</strong> Dữ liệu được tổng hợp theo các chiều phân tích kinh doanh (ví dụ: doanh thu theo tháng, hiệu suất sản xuất theo nhà máy).</li>
+                            <li><strong>Công nghệ:</strong> Các bảng tổng hợp (aggregate tables), data marts. Dữ liệu được cung cấp cho các công cụ BI (Power BI) và các mô hình AI/ML.</li>
+                            <li><strong>Giá trị:</strong> Tăng tốc độ truy vấn, đơn giản hóa việc tạo báo cáo và phân tích.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="platforms" class="section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">So sánh Nền tảng & Chi phí</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Phân tích chi phí ước tính và các ưu, nhược điểm của các nền tảng đám mây hàng đầu, cùng với các công cụ BI.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center text-slate-800 mb-4">Biểu đồ Chi phí Tổng thể Hàng tháng (USD, đã bao gồm VAT 5%)</h3>
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-4">Giả định: 200GB lưu trữ, 100 giờ ETL, 50TB truy vấn, 50 người dùng BI. Chi phí có thể thay đổi theo thực tế.</p>
+                </div>
+
+                <div class="bg-white p-6 mt-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center text-slate-800 mb-4">Bảng Chi tiết Ước tính Chi phí</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hạng mục Chi phí</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Microsoft Fabric</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">AWS</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Azure</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Google Cloud</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        Lưu trữ (200 GB)
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $4.60<span class="block text-xs text-slate-400">OneLake: $0.023/GB</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $4.60<span class="block text-xs text-slate-400">S3 Standard: $0.023/GB</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $3.80<span class="block text-xs text-slate-400">ADLS Gen2 Hot: $0.019/GB</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $4.00<span class="block text-xs text-slate-400">GCS Standard: ~$0.02/GB</span>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ETL (100 giờ)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $321.20<span class="block text-xs text-slate-400">Fabric F2 SKU</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $264.00<span class="block text-xs text-slate-400">Glue: $0.44/DPU-giờ</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $214.40<span class="block text-xs text-slate-400">ADF: $0.268/vCore-giờ</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $38.99<span class="block text-xs text-slate-400">Dataflow Batch</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Truy vấn (50 TB)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        Đã bao gồm<span class="block text-xs text-slate-400">Trong Fabric CU</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $250.00<span class="block text-xs text-slate-400">Athena: $5.00/TB</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $250.00<span class="block text-xs text-slate-400">Synapse SQL: $5.00/TB</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $245.00<span class="block text-xs text-slate-400">BigQuery: $5.00/TB</span>
+                                    </td>
+                                </tr>
+                                <tr class="bg-slate-100">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">Tổng chi phí nền tảng</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$325.80</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$518.60</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$468.20</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$287.99</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Công cụ BI (50 người dùng)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $700.00<span class="block text-xs text-slate-400">Power BI Pro</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $700.00<span class="block text-xs text-slate-400">Power BI Pro</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $700.00<span class="block text-xs text-slate-400">Power BI Pro</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                        $1,104.00<span class="block text-xs text-slate-400">Tableau Cloud</span>
+                                    </td>
+                                </tr>
+                                <tr class="bg-slate-100">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">TỔNG CỘNG ƯỚC TÍNH (USD)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$1,025.80</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$1,218.60</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$1,168.20</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-right">$1,391.99</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">VAT 5%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">$51.29</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">$60.93</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">$58.41</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">$69.60</td>
+                                </tr>
+                                <tr class="bg-blue-100">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-800">TỔNG CỘNG CUỐI CÙNG (USD)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-800 text-right">$1,077.09</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-800 text-right">$1,279.53</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-800 text-right">$1,226.61</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-800 text-right">$1,461.59</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                     <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                            <button class="platform-tab active whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium" data-target="tab-recommendation">Khuyến nghị</button>
+                            <button class="platform-tab whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium" data-target="tab-fabric">Microsoft Fabric</button>
+                            <button class="platform-tab whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium" data-target="tab-aws">AWS</button>
+                            <button class="platform-tab whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium" data-target="tab-azure">Azure</button>
+                            <button class="platform-tab whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium" data-target="tab-gcp">Google Cloud</button>
+                        </nav>
+                    </div>
+                    <div class="mt-4">
+                        <div id="tab-recommendation" class="platform-content">
+                           <div class="bg-white p-8 rounded-xl shadow-lg grid md:grid-cols-2 gap-8">
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+                                    <h4 class="text-xl font-bold text-blue-800">Nền tảng Đám mây: Microsoft Fabric</h4>
+                                    <p class="mt-2 text-slate-700">Mặc dù Google Cloud có chi phí nền tảng thấp nhất, <strong class="font-semibold">Microsoft Fabric</strong> được khuyến nghị do sự quen thuộc của đội ngũ ATAD với hệ sinh thái Microsoft.</p>
+                                    <ul class="mt-3 list-disc list-inside text-sm text-slate-600 space-y-1">
+                                        <li>Cung cấp giải pháp được quản lý hoàn toàn (managed services), giảm gánh nặng vận hành.</li>
+                                        <li>Tích hợp liền mạch giữa lưu trữ (OneLake), xử lý (Synapse), và ETL (Data Factory).</li>
+                                        <li>Thuận lợi cho việc triển khai và thích nghi của đội ngũ nội bộ.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+                                    <h4 class="text-xl font-bold text-green-800">Công cụ BI: Power BI</h4>
+                                    <p class="mt-2 text-slate-700"><strong class="font-semibold">Power BI</strong> là lựa chọn tối ưu về chi phí và khả năng tích hợp.</p>
+                                     <ul class="mt-3 list-disc list-inside text-sm text-slate-600 space-y-1">
+                                        <li>Chi phí bản quyền và vận hành cạnh tranh hơn đáng kể so với Tableau Cloud.</li>
+                                        <li>Tích hợp sâu rộng với hệ sinh thái Microsoft, bao gồm Microsoft Fabric.</li>
+                                        <li>Hỗ trợ đầy đủ các yêu cầu về phân quyền (RLS) và nhúng vào web nội bộ.</li>
+                                    </ul>
+                                </div>
+                           </div>
+                        </div>
+                        <div id="tab-fabric" class="platform-content hidden bg-white p-6 rounded-xl shadow-md">...</div>
+                        <div id="tab-aws" class="platform-content hidden bg-white p-6 rounded-xl shadow-md">...</div>
+                        <div id="tab-azure" class="platform-content hidden bg-white p-6 rounded-xl shadow-md">...</div>
+                        <div id="tab-gcp" class="platform-content hidden bg-white p-6 rounded-xl shadow-md">...</div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section id="roadmap" class="section">
+                <div class="text-center mb-12">
+                   <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Lộ trình & Quản lý Rủi ro</h2>
+                   <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Kế hoạch triển khai theo từng giai đoạn và các biện pháp chủ động để giảm thiểu rủi ro tiềm ẩn.</p>
+                </div>
+               
+                <!-- Lộ trình Triển khai -->
+                <div x-data="{ activePhase: 'phase1' }">
+                   <h3 class="text-2xl font-bold text-slate-800 mb-6 text-center">Lộ trình Triển khai Dự án</h3>
+                   <!-- Timeline Tabs -->
+                   <div class="mb-8 flex justify-center border-b">
+                      <button @click="activePhase = 'phase1'" :class="{'border-blue-500 text-blue-600': activePhase === 'phase1', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activePhase !== 'phase1'}" class="flex-1 text-center py-4 px-1 border-b-2 font-medium text-lg transition-colors duration-300">
+                         Giai đoạn 1: POC
+                      </button>
+                      <button @click="activePhase = 'phase2'" :class="{'border-blue-500 text-blue-600': activePhase === 'phase2', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activePhase !== 'phase2'}" class="flex-1 text-center py-4 px-1 border-b-2 font-medium text-lg transition-colors duration-300">
+                         Giai đoạn 2: Pilot
+                      </button>
+                      <button @click="activePhase = 'phase3'" :class="{'border-blue-500 text-blue-600': activePhase === 'phase3', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activePhase !== 'phase3'}" class="flex-1 text-center py-4 px-1 border-b-2 font-medium text-lg transition-colors duration-300">
+                         Giai đoạn 3: Production
+                      </button>
+                   </div>
+               
+                   <!-- Timeline Content -->
+                   <div class="bg-white p-8 rounded-xl shadow-lg">
+                      <div x-show="activePhase === 'phase1'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                         <h4 class="text-xl font-bold text-slate-800">Giai đoạn 1: POC (Proof of Concept) - Thời gian: 2-3 tháng</h4>
+                         <div class="mt-4 grid md:grid-cols-2 gap-6 text-sm">
+                            <div><strong class="text-slate-600">Mục tiêu:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Chứng minh tính khả thi kỹ thuật của kiến trúc.</li><li>Tích hợp dữ liệu ban đầu từ Salesforce và SAP.</li><li>Xây dựng dashboard mẫu bằng Power BI.</li><li>Đánh giá sơ bộ hiệu suất và chi phí thực tế.</li></ul></div>
+                            <div><strong class="text-slate-600">Nhân sự:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>1 Data Architect</li><li>1 Data Engineer</li><li>1 BI Developer</li></ul></div>
+                            <div><strong class="text-slate-600">Công cụ:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Microsoft Fabric/Azure</li><li>Power BI Desktop & Service</li></ul></div>
+                            <div><strong class="text-slate-600">Kết quả mong đợi:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Báo cáo POC chi tiết và các bài học kinh nghiệm.</li><li>Dashboard mẫu hoạt động.</li><li>Ước tính chi phí thực tế.</li></ul></div>
+                         </div>
+                      </div>
+                      <div x-show="activePhase === 'phase2'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0" x-cloak>
+                         <h4 class="text-xl font-bold text-slate-800">Giai đoạn 2: Pilot - Thời gian: 4-6 tháng</h4>
+                          <div class="mt-4 grid md:grid-cols-2 gap-6 text-sm">
+                            <div><strong class="text-slate-600">Mục tiêu:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Mở rộng tích hợp dữ liệu (thêm module SAP, ATAD Digital System).</li><li>Triển khai cho một phòng ban thí điểm (VD: CRM, Sản xuất).</li><li>Tinh chỉnh kiến trúc và mô hình dữ liệu dựa trên phản hồi.</li><li>Đào tạo ban đầu cho người dùng cuối.</li></ul></div>
+                            <div><strong class="text-slate-600">Nhân sự:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>1 Data Architect</li><li>2-3 Data Engineers</li><li>2 BI Developers</li><li>1 Data Analyst (từ phòng ban thí điểm)</li></ul></div>
+                            <div><strong class="text-slate-600">Công cụ:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Nền tảng Cloud (Microsoft Fabric/Azure)</li><li>Power BI</li><li>Azure DevOps/GitHub</li></ul></div>
+                            <div><strong class="text-slate-600">Kết quả mong đợi:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Hệ thống Lakehouse hoạt động ổn định cho phòng ban thí điểm.</li><li>Tài liệu chi tiết về kiến trúc và vận hành.</li><li>Phản hồi từ người dùng để cải thiện hệ thống.</li></ul></div>
+                         </div>
+                      </div>
+                      <div x-show="activePhase === 'phase3'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0" x-cloak>
+                         <h4 class="text-xl font-bold text-slate-800">Giai đoạn 3: Production - Thời gian: 6-12 tháng</h4>
+                         <div class="mt-4 grid md:grid-cols-2 gap-6 text-sm">
+                            <div><strong class="text-slate-600">Mục tiêu:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Tích hợp toàn bộ các nguồn dữ liệu còn lại.</li><li>Triển khai hệ thống cho tất cả các phòng ban.</li><li>Tối ưu hóa hiệu suất và chi phí toàn diện.</li><li>Thiết lập quy trình MLOps và mở rộng cho các ứng dụng AI.</li></ul></div>
+                            <div><strong class="text-slate-600">Nhân sự:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>1 Data Architect</li><li>3-5 Data Engineers</li><li>3-4 BI Developers/Analysts</li><li>1+ Data Scientist</li></ul></div>
+                            <div><strong class="text-slate-600">Công cụ:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Toàn bộ stack công nghệ đã chọn.</li><li>Azure DevOps/GitHub Actions cho CI/CD.</li><li>Azure Machine Learning cho MLOps.</li></ul></div>
+                            <div><strong class="text-slate-600">Kết quả mong đợi:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Hệ thống Lakehouse hoàn chỉnh, phục vụ toàn công ty.</li><li>Nền tảng vững chắc cho các sáng kiến AI/ML.</li><li>Quy trình vận hành và quản trị dữ liệu được tự động hóa.</li></ul></div>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+                <!-- Quản lý Rủi ro -->
+                <div class="mt-16">
+                   <h3 class="text-2xl font-bold text-slate-800 mb-6 text-center">Quản lý Rủi ro & Biện pháp Giảm thiểu</h3>
+                   <div class="grid md:grid-cols-2 gap-8">
+                      <!-- Risk Card 1: Bảo mật -->
+                      <div class="bg-white p-6 rounded-xl shadow-lg">
+                         <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            </div>
+                            <h4 class="font-bold text-lg text-slate-800">Bảo mật Dữ liệu</h4>
+                         </div>
+                         <div class="mt-4 text-sm space-y-3">
+                            <div><strong class="text-red-600">Rủi ro:</strong> Lộ dữ liệu nhạy cảm (đặc biệt từ SAP), truy cập trái phép, vi phạm quy định (GDPR, HIPPA).</div>
+                            <div><strong class="text-green-600">Biện pháp Giảm thiểu:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Mã hóa dữ liệu (at rest & in transit).</li><li>Kiểm soát truy cập chặt chẽ (RBAC) và bảo mật cấp hàng (RLS).</li><li>Sử dụng Mạng ảo (VNet) và tường lửa để cô lập môi trường.</li><li>Kiểm toán và giám sát nhật ký truy cập thường xuyên.</li></ul></div>
+                         </div>
+                      </div>
+                      
+                      <!-- Risk Card 2: Chất lượng Dữ liệu -->
+                       <div class="bg-white p-6 rounded-xl shadow-lg">
+                         <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-orange-100 text-orange-600 mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <h4 class="font-bold text-lg text-slate-800">Chất lượng Dữ liệu</h4>
+                         </div>
+                         <div class="mt-4 text-sm space-y-3">
+                            <div><strong class="text-orange-600">Rủi ro:</strong> Dữ liệu không chính xác, không nhất quán, trùng lặp dẫn đến quyết định sai lệch.</div>
+                            <div><strong class="text-green-600">Biện pháp Giảm thiểu:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Sử dụng Delta Lake để thực thi schema và quản lý phiên bản.</li><li>Xây dựng quy trình làm sạch, chuẩn hóa dữ liệu tại lớp Silver.</li><li>Triển khai kiểm tra chất lượng dữ liệu tự động trong pipeline.</li><li>Thiết lập theo dõi nguồn gốc dữ liệu (Data Lineage).</li></ul></div>
+                         </div>
+                      </div>
+
+                      <!-- Risk Card 3: Chi phí -->
+                       <div class="bg-white p-6 rounded-xl shadow-lg">
+                         <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 10v-1m0 0c-1.657 0-3-.895-3-2s1.343-2 3-2 3-.895 3-2-1.343-2-3-2m0 0c-1.11 0-2.08-.402-2.599-1M12 4V3" /></svg>
+                            </div>
+                            <h4 class="font-bold text-lg text-slate-800">Chi phí Vượt mức</h4>
+                         </div>
+                         <div class="mt-4 text-sm space-y-3">
+                            <div><strong class="text-yellow-600">Rủi ro:</strong> Chi phí đám mây tăng không kiểm soát do sử dụng tài nguyên không hiệu quả.</div>
+                            <div><strong class="text-green-600">Biện pháp Giảm thiểu:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Giám sát chi phí liên tục bằng công cụ của nhà cung cấp.</li><li>Tối ưu hóa truy vấn và pipeline ETL để giảm thời gian chạy.</li><li>Sử dụng các dịch vụ serverless và auto-scaling.</li><li>Tận dụng các chính sách giá ưu đãi (Reserved Instances).</li><li>Thiết lập ngân sách và cảnh báo chi phí.</li></ul></div>
+                         </div>
+                      </div>
+
+                       <!-- Risk Card 4: Khả năng mở rộng -->
+                       <div class="bg-white p-6 rounded-xl shadow-lg">
+                         <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" /></svg>
+                            </div>
+                            <h4 class="font-bold text-lg text-slate-800">Khả năng Mở rộng</h4>
+                         </div>
+                         <div class="mt-4 text-sm space-y-3">
+                            <div><strong class="text-blue-600">Rủi ro:</strong> Hệ thống không đáp ứng được khi khối lượng dữ liệu hoặc số lượng người dùng tăng.</div>
+                            <div><strong class="text-green-600">Biện pháp Giảm thiểu:</strong><ul class="list-disc pl-5 mt-1 space-y-1 text-slate-500"><li>Kiến trúc phân tách lưu trữ và tính toán (cho phép mở rộng độc lập).</li><li>Ưu tiên sử dụng các dịch vụ managed services có khả năng tự động scale.</li><li>Tận dụng Delta Lake để tối ưu hóa hiệu suất trên dữ liệu lớn.</li><li>Thiết kế mô hình dữ liệu linh hoạt.</li></ul></div>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+             </section>
+
+            <section id="applications" class="section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Ứng dụng BI, Phân tích Dữ liệu & AI/ML</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Nền tảng Lakehouse sẽ mở ra cánh cửa cho các ứng dụng thông minh, mang lại giá trị kinh doanh vượt trội.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="ai-card bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center">
+                                 <span class="text-3xl mr-4">📊</span>
+                                <h3 class="text-xl font-bold text-slate-800">BI & Báo cáo Toàn diện</h3>
+                            </div>
+                            <ul class="mt-4 space-y-2 text-slate-600">
+                                <li>Báo cáo tài chính, sản xuất</li>
+                                <li>Phân tích kinh doanh, nhân sự</li>
+                                <li>Dashboard tiến độ dự án</li>
+                            </ul>
+                        </div>
+                        <button class="detail-btn mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold self-start" data-target="modal-bi">Xem chi tiết →</button>
+                    </div>
+                     <div class="ai-card bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center">
+                                <span class="text-3xl mr-4">🎯</span>
+                                <h3 class="text-xl font-bold text-slate-800">Phân tích Khách hàng 360°</h3>
+                            </div>
+                             <ul class="mt-4 space-y-2 text-slate-600">
+                                <li>Hợp nhất dữ liệu CRM, dự án</li>
+                                <li>Cá nhân hóa tiếp thị</li>
+                                <li>Cải thiện dịch vụ khách hàng</li>
+                            </ul>
+                        </div>
+                        <button class="detail-btn mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold self-start" data-target="modal-customer360">Xem chi tiết →</button>
+                    </div>
+                     <div class="ai-card bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center">
+                               <span class="text-3xl mr-4">⛓️</span>
+                                <h3 class="text-xl font-bold text-slate-800">Phân tích Chuỗi cung ứng</h3>
+                            </div>
+                            <ul class="mt-4 space-y-2 text-slate-600">
+                                <li>Theo dõi tồn kho thời gian thực</li>
+                                <li>Phân tích hiệu suất nhà cung cấp</li>
+                                <li>Tối ưu hóa logistics</li>
+                            </ul>
+                        </div>
+                        <button class="detail-btn mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold self-start" data-target="modal-supplychain">Xem chi tiết →</button>
+                    </div>
+                    <div class="ai-card bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center">
+                                 <span class="text-3xl mr-4">🏭</span>
+                                <h3 class="text-xl font-bold text-slate-800">AI trong Sản xuất</h3>
+                            </div>
+                            <ul class="mt-4 space-y-2 text-slate-600">
+                                <li>Bảo trì Dự đoán</li>
+                                <li>Dự báo Nhu cầu</li>
+                                <li>Kiểm soát Chất lượng</li>
+                            </ul>
+                        </div>
+                        <button class="detail-btn mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold self-start" data-target="modal-sanxuat">Xem chi tiết →</button>
+                    </div>
+                     <div class="ai-card bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center">
+                               <span class="text-3xl mr-4">💰</span>
+                                <h3 class="text-xl font-bold text-slate-800">AI trong Tài chính</h3>
+                            </div>
+                            <ul class="mt-4 space-y-2 text-slate-600">
+                                <li>Phát hiện Gian lận</li>
+                                <li>Dự báo Tài chính</li>
+                                <li>Phân tích Rủi ro Tín dụng</li>
+                            </ul>
+                        </div>
+                        <button class="detail-btn mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold self-start" data-target="modal-taichinh">Xem chi tiết →</button>
+                    </div>
+                    <div class="ai-card bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center">
+                               <span class="text-3xl mr-4">🤖</span>
+                                <h3 class="text-xl font-bold text-slate-800">Nền tảng MLOps</h3>
+                            </div>
+                             <p class="mt-4 text-slate-600">Tự động hóa việc triển khai, giám sát và quản lý vòng đời của các mô hình AI/ML.</p>
+                        </div>
+                        <button class="detail-btn mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold self-start" data-target="modal-mlops">Xem chi tiết →</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals for AI/ML Details -->
+    <div id="modal-container"></div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            const modalContainer = document.getElementById('modal-container');
+
+            const appData = {
+                platforms: {
+                    'tab-fabric': {
+                        title: 'Microsoft Fabric (OneLake + Synapse + Data Factory)',
+                        pros: [
+                            'Tích hợp sâu và liền mạch với hệ sinh thái Microsoft.',
+                            'Cung cấp giải pháp được quản lý hoàn toàn (SaaS/PaaS), giảm gánh nặng vận hành.',
+                            'OneLake đơn giản hóa quản lý dữ liệu với kho lưu trữ thống nhất.',
+                            'Chi phí gộp (Capacity Units) có thể hiệu quả cho nhiều loại workload.'
+                        ],
+                        cons: [
+                            'Nền tảng tương đối mới, cộng đồng và tài liệu chưa phong phú bằng các đối thủ.',
+                            'Yêu cầu chuyên môn đa dạng (Spark, Python, DAX) để thành thạo.',
+                            'Một số tính năng nâng cao (CDC, snapshots) còn hạn chế.'
+                        ]
+                    },
+                    'tab-aws': {
+                        title: 'AWS (S3 + Glue + Athena/Redshift)',
+                         pros: [
+                            'Hệ sinh thái dịch vụ trưởng thành, mạnh mẽ và linh hoạt nhất.',
+                            'Khả năng lưu trữ gần như vô hạn và bền bỉ với S3.',
+                            'Hiệu suất cao cho phân tích phức tạp với sự kết hợp của Athena và Redshift.',
+                            'Cộng đồng người dùng lớn và tài liệu phong phú.'
+                        ],
+                        cons: [
+                            'Chi phí có thể tăng cao nếu không được quản lý và tối ưu hóa cẩn thận.',
+                            'Việc thiết lập và kết nối các dịch vụ có thể phức tạp cho người mới bắt đầu.',
+                            'Yêu cầu chuyên môn DevOps để vận hành hiệu quả ở quy mô lớn.'
+                        ]
+                    },
+                     'tab-azure': {
+                        title: 'Azure (ADLS Gen2 + ADF + Synapse Analytics)',
+                         pros: [
+                            'Tích hợp tốt trong hệ sinh thái Microsoft, tương tự Fabric nhưng theo mô hình IaaS/PaaS.',
+                            'ADLS Gen2 cung cấp lưu trữ hiệu suất cao với chi phí tối ưu.',
+                            'Synapse Analytics là một nền tảng phân tích hợp nhất mạnh mẽ, đa năng.',
+                            'Bảo mật chi tiết ở cấp độ tệp và thư mục.'
+                        ],
+                        cons: [
+                            'Việc ghi dữ liệu thời gian thực có thể gặp khó khăn (vấn đề tệp nhỏ).',
+                            'Có thể thiếu một số tính năng của Data Warehouse truyền thống.',
+                            'Nguy cơ trở thành "data swamp" nếu không có quản trị dữ liệu tốt.'
+                        ]
+                    },
+                    'tab-gcp': {
+                        title: 'Google Cloud (GCS + Dataflow + BigQuery)',
+                         pros: [
+                            'BigQuery là dịch vụ kho dữ liệu serverless, có khả năng mở rộng và hiệu suất truy vấn xuất sắc.',
+                            'Chi phí ETL và truy vấn rất cạnh tranh (1TB truy vấn đầu tiên miễn phí).',
+                            'Tích hợp gốc và mạnh mẽ với các dịch vụ AI/ML hàng đầu của Google (Vertex AI).',
+                             'Kiến trúc tách biệt lưu trữ - tính toán mang lại sự linh hoạt cao.'
+                        ],
+                        cons: [
+                            'Việc xây dựng kiến trúc từ đầu có thể phức tạp.',
+                            'Yêu cầu chuyên môn khoa học dữ liệu để khai thác tối đa giá trị.',
+                            'Hệ sinh thái tổng thể có thể ít quen thuộc hơn với các doanh nghiệp chủ yếu dùng Microsoft.'
+                        ]
+                    }
+                },
+                ai_details: {
+                    'modal-bi': {
+                        title: 'Chi tiết về BI & Báo cáo Toàn diện',
+                        use_cases: [
+                            { 
+                                name: 'Báo cáo Dashboard Toàn diện',
+                                analysis: 'Hợp nhất dữ liệu từ Salesforce, SAP, ATAD Digital System để tạo báo cáo chi tiết cho các phòng ban.',
+                                application: 'Xây dựng các dashboard tương tác trên Power BI về: Tài chính (doanh thu, lợi nhuận), Sản xuất (OEE, tỷ lệ lỗi), Kinh doanh (doanh số, hiệu suất sale), Nhân sự (tỷ lệ nghỉ việc), và Dự án (tiến độ, chi phí).'
+                            },
+                             { 
+                                name: 'Phân tích Tự phục vụ (Self-service BI)',
+                                analysis: 'Cung cấp dữ liệu đã được làm sạch và chuẩn hóa ở lớp Gold.',
+                                application: 'Cho phép người dùng nghiệp vụ tự truy vấn, khám phá dữ liệu và tạo báo cáo tùy chỉnh mà không cần phụ thuộc vào IT, thúc đẩy văn hóa ra quyết định dựa trên dữ liệu.'
+                            }
+                        ]
+                    },
+                    'modal-customer360': {
+                        title: 'Chi tiết về Phân tích Khách hàng 360°',
+                        use_cases: [
+                             { 
+                                name: 'Tạo Chân dung Khách hàng Toàn diện',
+                                analysis: 'Hợp nhất dữ liệu từ Salesforce (CRM), hệ sinh thái nội bộ (dữ liệu dự án, thanh toán), và các nguồn khác (tương tác website, phản hồi).',
+                                application: 'Tạo ra một cái nhìn thống nhất về từng khách hàng, hiểu rõ hành trình, nhu cầu và hành vi của họ để hỗ trợ cá nhân hóa và cải thiện dịch vụ.'
+                            }
+                        ]
+                    },
+                     'modal-supplychain': {
+                        title: 'Chi tiết về Phân tích Chuỗi cung ứng',
+                        use_cases: [
+                             { 
+                                name: 'Tối ưu hóa Chuỗi cung ứng',
+                                analysis: 'Phân tích dữ liệu tồn kho theo thời gian thực, dữ liệu nhà cung cấp, hiệu suất vận chuyển, và các chỉ số logistics.',
+                                application: 'Sử dụng phân tích để theo dõi và tối ưu hóa toàn bộ chuỗi cung ứng, từ đó giảm chi phí lưu kho và tăng hiệu quả giao hàng.'
+                            }
+                        ]
+                    },
+                    'modal-sanxuat': {
+                        title: 'Chi tiết Ứng dụng AI trong Sản xuất',
+                        use_cases: [
+                            { 
+                                name: 'Bảo trì Dự đoán',
+                                analysis: 'Thu thập và phân tích dữ liệu từ các cảm biến IoT trên máy móc (độ rung, nhiệt độ, v.v.), kết hợp với lịch sử sự cố và bảo trì.',
+                                application: 'Huấn luyện mô hình ML để nhận diện các mẫu bất thường, dự đoán thời điểm thiết bị có khả năng hỏng hóc, cho phép bảo trì chủ động và giảm thời gian chết.'
+                            },
+                            {
+                                name: 'Dự báo Nhu cầu',
+                                analysis: 'Phân tích dữ liệu lịch sử bán hàng, xu hướng mùa vụ, đơn hàng, chiến dịch tiếp thị và các yếu tố kinh tế vĩ mô.',
+                                application: 'Sử dụng thuật toán ML/DL để dự báo nhu cầu chính xác, giúp tối ưu hóa kế hoạch sản xuất và quản lý tồn kho.'
+                            }
+                        ]
+                    },
+                    'modal-taichinh': {
+                        title: 'Chi tiết Ứng dụng AI trong Tài chính',
+                         use_cases: [
+                            {
+                                name: 'Phát hiện Gian lận',
+                                analysis: 'Phân tích dữ liệu giao dịch tài chính, chi phí, nhà cung cấp, và các mẫu giao dịch bất thường.',
+                                application: 'Sử dụng thuật toán phát hiện bất thường (anomaly detection) để xác định các giao dịch đáng ngờ, giảm thiểu rủi ro tài chính.'
+                            },
+                            {
+                                name: 'Dự báo Tài chính',
+                                analysis: 'Dữ liệu lịch sử doanh thu, chi phí, dòng tiền và các chỉ số kinh tế vĩ mô.',
+                                application: 'Sử dụng mô hình chuỗi thời gian (time series) để dự báo dòng tiền, doanh thu, hỗ trợ lập kế hoạch và ra quyết định đầu tư.'
+                            }
+                        ]
+                    },
+                     'modal-mlops': {
+                        title: 'Chi tiết về Nền tảng MLOps',
+                         use_cases: [
+                            {
+                                name: 'MLOps (Machine Learning Operations)',
+                                analysis: 'Tích hợp trực tiếp với Lakehouse để truy cập dữ liệu đã làm sạch cho việc huấn luyện mô hình.',
+                                application: 'Sử dụng các công cụ (Azure ML, AWS SageMaker) để tự động hóa quy trình phát triển, triển khai, giám sát và quản lý vòng đời của mô hình ML, đảm bảo hiệu suất và độ tin cậy.'
+                            },
+                        ]
+                    }
+                }
+            };
+            
+            function updateActiveLink(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === `#${targetId}`);
+                });
+            }
+
+            function showSection(targetId) {
+                sections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                        const cards = section.querySelectorAll('.card-enter, .ai-card');
+                        cards.forEach((card, index) => {
+                            card.style.animationDelay = `${index * 100}ms`;
+                            card.classList.add('card-enter');
+                        });
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+                updateActiveLink(targetId);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    showSection(targetId);
+                    window.history.pushState(null, '', `#${targetId}`);
+                });
+            });
+
+            const initialHash = window.location.hash.substring(1) || 'overview';
+            if (document.getElementById(initialHash)) {
+                 showSection(initialHash);
+            } else {
+                 showSection('overview');
+            }
+
+
+            const medallionCards = document.querySelectorAll('.medallion-card');
+            const detailContents = document.querySelectorAll('.architecture-detail-content');
+            
+            medallionCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const detailId = card.dataset.details;
+                    medallionCards.forEach(c => c.classList.remove('ring-2', 'ring-blue-500'));
+                    card.classList.add('ring-2', 'ring-blue-500');
+                    detailContents.forEach(content => {
+                        content.classList.toggle('hidden', content.id !== detailId);
+                    });
+                     document.getElementById('architecture-default').classList.add('hidden');
+                });
+            });
+
+            const platformTabs = document.querySelectorAll('.platform-tab');
+            const platformContents = document.querySelectorAll('.platform-content');
+            
+            platformTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.target;
+                    platformTabs.forEach(t => {
+                        t.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                        t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    });
+                    tab.classList.add('active', 'border-blue-500', 'text-blue-600');
+                    platformContents.forEach(content => {
+                        content.classList.toggle('hidden', content.id !== target);
+                    });
+                });
+            });
+            
+            function createPlatformTabContent(id) {
+                const data = appData.platforms[id];
+                if (!data) return '';
+                const prosHtml = data.pros.map(pro => `<li>${pro}</li>`).join('');
+                const consHtml = data.cons.map(con => `<li>${con}</li>`).join('');
+                return `
+                    <h4 class="text-xl font-bold text-slate-800">${data.title}</h4>
+                    <div class="grid md:grid-cols-2 gap-6 mt-4">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h5 class="font-semibold text-green-700">Ưu điểm</h5>
+                            <ul class="mt-2 list-disc list-inside text-sm text-slate-600 space-y-1">${prosHtml}</ul>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <h5 class="font-semibold text-red-700">Nhược điểm</h5>
+                            <ul class="mt-2 list-disc list-inside text-sm text-slate-600 space-y-1">${consHtml}</ul>
+                        </div>
+                    </div>`;
+            }
+
+            document.getElementById('tab-fabric').innerHTML = createPlatformTabContent('tab-fabric');
+            document.getElementById('tab-aws').innerHTML = createPlatformTabContent('tab-aws');
+            document.getElementById('tab-azure').innerHTML = createPlatformTabContent('tab-azure');
+            document.getElementById('tab-gcp').innerHTML = createPlatformTabContent('tab-gcp');
+
+
+            // Chart.js implementation
+            if (document.getElementById('costChart')) {
+                const ctx = document.getElementById('costChart').getContext('2d');
+                const costData = {
+                    labels: ['Microsoft Fabric', 'AWS', 'Azure', 'Google Cloud'],
+                    datasets: [{
+                        label: 'Tổng chi phí ước tính (USD/tháng, có VAT)',
+                        data: [1077.09, 1279.53, 1226.61, 1461.59],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)', 
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'  
+                        ],
+                        borderColor: [
+                            '#2563eb',
+                            '#f97316',
+                            '#10b981',
+                            '#ef4444'
+                        ],
+                        borderWidth: 1
+                    }]
+                };
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: costData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label || ''}: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: { y: { beginAtZero: true, title: { display: true, text: 'Chi phí (USD)' } } }
+                    }
+                });
+            }
+
+            // Modal for AI details
+            function createModal(modalId, title, useCases) {
+                const useCasesHtml = useCases.map(uc => `
+                    <div class="mt-4 pb-2 border-b border-gray-200 last:border-b-0">
+                        <h4 class="text-md font-semibold text-blue-700">${uc.name}</h4>
+                        <p class="text-sm mt-1"><strong class="font-medium text-slate-700">Phân tích gì:</strong> <span class="text-slate-600">${uc.analysis}</span></p>
+                        <p class="text-sm mt-1"><strong class="font-medium text-slate-700">Áp dụng:</strong> <span class="text-slate-600">${uc.application}</span></p>
+                    </div>
+                `).join('');
+
+                return `
+                    <div id="${modalId}" class="modal-backdrop fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
+                        <div class="modal-content bg-white rounded-lg shadow-2xl w-full max-w-3xl transform scale-95">
+                            <div class="p-6">
+                                <div class="flex justify-between items-center pb-3 border-b">
+                                    <h3 class="text-xl font-bold text-slate-800">${title}</h3>
+                                    <button class="close-btn text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+                                </div>
+                                <div class="mt-2 max-h-[60vh] overflow-y-auto pr-2">
+                                    ${useCasesHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Create and append all modals
+            for (const [modalId, data] of Object.entries(appData.ai_details)) {
+                modalContainer.innerHTML += createModal(modalId, data.title, data.use_cases);
+            }
+
+            function openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.querySelector('.modal-content').classList.remove('scale-95');
+                }
+            }
+
+            function closeModal(modal) {
+                 if (modal) {
+                    modal.classList.add('opacity-0');
+                    modal.querySelector('.modal-content').classList.add('scale-95');
+                    setTimeout(() => {
+                         modal.classList.add('pointer-events-none');
+                    }, 300);
+                }
+            }
+
+            document.querySelectorAll('.detail-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    openModal(button.dataset.target);
+                });
+            });
+
+            document.querySelectorAll('.modal-backdrop').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+             document.querySelectorAll('.close-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                   closeModal(button.closest('.modal-backdrop'));
+                });
+            });
+        });
+    </script>
+</body>
+</html>

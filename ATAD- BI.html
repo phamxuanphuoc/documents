@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tầm nhìn Dữ liệu & AI cho ATAD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Corporate Tech -->
+    <!-- Application Structure Plan: The SPA uses a thematic, narrative-driven single-page scroll to transform the dense technical report into an engaging story. The flow is: 1. Hero (The Opportunity), 2. Foundation (Explaining the Lakehouse architecture), 3. Level 1 (Interactive BI dashboards per department), 4. Level 2 (Interactive AI/ML Solutions Hub), 5. Roadmap (Visual project timeline), 6. Conclusion. This structure is chosen for usability, guiding non-technical stakeholders from the foundational 'why' to the immediate benefits (BI) and future potential (AI), making abstract concepts tangible and understandable. -->
+    <!-- Visualization & Content Choices: 
+        - Lakehouse Diagram: Goal=Organize, Method=HTML/CSS Flexbox, Interaction=None. Justification: A simple, library-free visual flow of the Medallion Architecture.
+        - BI Section: Goal=Compare/Inform, Method=Chart.js Bar/Line/Doughnut, Interaction=Buttons switch department views and update charts. Justification: Makes BI benefits concrete and department-specific, with added Project Management and CRM/Sales dashboards.
+        - AI/ML Hub: Goal=Explain/Inform, Method=HTML/CSS Grid + Chart.js Bubble/Line/Bar/Pie, Interaction=Clickable cards update a detailed view with text and a relevant, dynamic chart. Justification: Deconstructs complex AI use cases into understandable Problem/Solution/Value segments with visual aids, with added Production Planning, Logistics Optimization, and Financial Risk Analysis, and detailed case studies for each.
+        - Roadmap: Goal=Change, Method=HTML/CSS Timeline, Interaction=None. Justification: Clear, static visualization of project phases.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1a2b48;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #495057;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem auto;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        .tab-button {
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            background-color: #1a2b48;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .ai-card {
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+        .ai-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .ai-card.active {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .medallion-arrow {
+            font-size: 2rem;
+            color: #6c757d;
+        }
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="sticky-nav shadow-md">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-[#1a2b48]">ATAD | Tầm nhìn Dữ liệu</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#foundation" class="nav-link px-2 py-1">Nền tảng</a>
+                    <a href="#bi-suite" class="nav-link px-2 py-1">Business Intelligence</a>
+                    <a href="#ai-hub" class="nav-link px-2 py-1">Giải pháp AI/ML</a>
+                    <a href="#roadmap" class="nav-link px-2 py-1">Lộ trình</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="py-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-[#1a2b48] leading-tight">Chuyển đổi Dữ liệu, Dẫn đầu Tương lai</h1>
+                <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Kiến trúc Lakehouse và AI không chỉ là nâng cấp công nghệ, mà là đòn bẩy chiến lược giúp ATAD tối ưu hóa vận hành, ra quyết định thông minh và củng cố vị thế dẫn đầu trong ngành kết cấu thép.</p>
+            </div>
+        </section>
+
+        <section id="foundation" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Nền tảng Hợp nhất Dữ liệu</h2>
+                <p class="section-subtitle">Để khai thác AI, trước hết cần một nguồn dữ liệu đáng tin cậy. Kiến trúc Lakehouse với mô hình Medallion sẽ hợp nhất dữ liệu từ các hệ thống phân tán, tạo ra một "sự thật duy nhất" cho toàn bộ doanh nghiệp.</p>
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <div class="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-4">
+                        <div class="w-full md:w-1/4">
+                            <h3 class="font-bold text-lg mb-2 text-center text-[#1a2b48]">Hệ thống Nguồn</h3>
+                            <div class="space-y-2 text-center text-sm">
+                                <div class="bg-gray-100 rounded p-2">Salesforce (CRM)</div>
+                                <div class="bg-gray-100 rounded p-2">SAP (ERP)</div>
+                                <div class="bg-gray-100 rounded p-2">ATAD Digital System</div>
+                                <div class="bg-gray-100 rounded p-2">Office 365 / G-Workspace</div>
+                            </div>
+                        </div>
+                        <div class="medallion-arrow">→</div>
+                        <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 w-full md:w-1/5 text-center">
+                            <h3 class="font-semibold text-blue-800">BRONZE</h3>
+                            <p class="text-sm text-blue-600">Dữ liệu thô</p>
+                        </div>
+                        <div class="medallion-arrow">→</div>
+                        <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4 w-full md:w-1/5 text-center">
+                            <h3 class="font-semibold text-green-800">SILVER</h3>
+                            <p class="text-sm text-green-600">Dữ liệu được làm sạch & chuẩn hóa</p>
+                        </div>
+                        <div class="medallion-arrow">→</div>
+                        <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 w-full md:w-1/5 text-center">
+                            <h3 class="font-semibold text-yellow-800">GOLD</h3>
+                            <p class="text-sm text-yellow-600">Dữ liệu tổng hợp cho phân tích</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="bi-suite" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Cấp độ 1: Business Intelligence Thông minh</h2>
+                <p class="section-subtitle">Trước khi dự báo tương lai, chúng ta cần hiểu rõ hiện tại. Power BI sẽ biến dữ liệu từ Lakehouse thành các dashboard trực quan, giúp các phòng ban theo dõi hiệu suất theo thời gian thực và đưa ra quyết định nhanh chóng.</p>
+                
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                    <button class="tab-button bi-tab px-4 py-2 rounded-full font-semibold bg-gray-200 text-gray-700 active" data-target="production">Sản xuất & Vận hành</button>
+                    <button class="tab-button bi-tab px-4 py-2 rounded-full font-semibold bg-gray-200 text-gray-700" data-target="supply-chain">Chuỗi Cung ứng</button>
+                    <button class="tab-button bi-tab px-4 py-2 rounded-full font-semibold bg-gray-200 text-gray-700" data-target="finance">Tài chính</button>
+                    <button class="tab-button bi-tab px-4 py-2 rounded-full font-semibold bg-gray-200 text-gray-700" data-target="project-management">Quản lý Dự án</button>
+                    <button class="tab-button bi-tab px-4 py-2 rounded-full font-semibold bg-gray-200 text-gray-700" data-target="crm-sales">Kinh doanh & CRM</button>
+                    <button class="tab-button bi-tab px-4 py-2 rounded-full font-semibold bg-gray-200 text-gray-700" data-target="hr">Nhân sự</button>
+                </div>
+
+                <div id="bi-content" class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                    <h3 id="bi-title" class="text-2xl font-bold text-center mb-4 text-[#1a2b48]"></h3>
+                    <p id="bi-description" class="text-center text-gray-600 mb-6 max-w-2xl mx-auto"></p>
+                    <div class="chart-container">
+                        <canvas id="biChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ai-hub" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Cấp độ 2: Đột phá với Giải pháp AI/ML</h2>
+                <p class="section-subtitle">Trên nền tảng dữ liệu vững chắc, ATAD có thể triển khai các giải pháp AI/ML chuyên sâu để giải quyết các bài toán cốt lõi của ngành, từ tối ưu hóa thiết kế, dự báo bảo trì đến giám sát an toàn lao động.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    <div class="md:col-span-4">
+                        <div class="space-y-4">
+                            <div class="ai-card p-4 rounded-lg cursor-pointer bg-white active" data-ai="design">
+                                <h4 class="font-bold text-lg text-[#1a2b48]">Tối ưu hóa Thiết kế bằng AI</h4>
+                                <p class="text-sm text-gray-600">Tự động tạo ra các thiết kế kết cấu tối ưu về chi phí và trọng lượng.</p>
+                            </div>
+                            <div class="ai-card p-4 rounded-lg cursor-pointer bg-white" data-ai="maintenance">
+                                <h4 class="font-bold text-lg text-[#1a2b48]">Bảo trì Dự đoán</h4>
+                                <p class="text-sm text-gray-600">Dự báo hỏng hóc thiết bị trước khi xảy ra để giảm thời gian ngừng máy.</p>
+                            </div>
+                            <div class="ai-card p-4 rounded-lg cursor-pointer bg-white" data-ai="quality">
+                                <h4 class="font-bold text-lg text-[#1a2b48]">Kiểm soát Chất lượng</h4>
+                                <p class="text-sm text-gray-600">Dùng thị giác máy tính để phát hiện lỗi sản phẩm theo thời gian thực.</p>
+                            </div>
+                            <div class="ai-card p-4 rounded-lg cursor-pointer bg-white" data-ai="production-planning">
+                                <h4 class="font-bold text-lg text-[#1a2b48]">Lập kế hoạch Sản xuất Động</h4>
+                                <p class="text-sm text-gray-600">Tạo lịch trình sản xuất tự động điều chỉnh theo thời gian thực.</p>
+                            </div>
+                            <div class="ai-card p-4 rounded-lg cursor-pointer bg-white" data-ai="logistics-optimization">
+                                <h4 class="font-bold text-lg text-[#1a2b48]">Tối ưu hóa Logistics</h4>
+                                <p class="text-sm text-gray-600">Tìm tuyến đường vận chuyển tối ưu, giảm chi phí và thời gian.</p>
+                            </div>
+                             <div class="ai-card p-4 rounded-lg cursor-pointer bg-white" data-ai="financial-risk">
+                                <h4 class="font-bold text-lg text-[#1a2b48]">Phân tích Rủi ro Tài chính</h4>
+                                <p class="text-sm text-gray-600">Đánh giá khả năng vỡ nợ của đối tác, giảm thiểu rủi ro nợ xấu.</p>
+                            </div>
+                            <div class="ai-card p-4 rounded-lg cursor-pointer bg-white" data-ai="safety">
+                                <h4 class="font-bold text-lg text-[#1a2b48]">Giám sát An toàn Lao động</h4>
+                                <p class="text-sm text-gray-600">Phát hiện hành vi không an toàn qua camera để giảm thiểu tai nạn.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-8 bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                        <h3 id="ai-title" class="text-3xl font-bold text-[#1a2b48] mb-4"></h3>
+                        <div id="ai-content-display">
+                            <p class="font-semibold text-gray-700">Bài toán:</p>
+                            <p id="ai-problem" class="mb-4 text-gray-600"></p>
+                            <p class="font-semibold text-gray-700">Giải pháp AI/ML:</p>
+                            <p id="ai-solution" class="mb-4 text-gray-600"></p>
+                             <p class="font-semibold text-gray-700">Giá trị kinh doanh:</p>
+                            <p id="ai-value" class="mb-6 text-gray-600 font-medium text-blue-600"></p>
+                            <p class="font-semibold text-gray-700">Case Study thực tế:</p>
+                            <p id="ai-case-study" class="mb-6 text-gray-600"></p>
+                        </div>
+                        <div class="chart-container" id="ai-chart-container">
+                            <canvas id="aiChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Lộ trình Triển khai</h2>
+                <p class="section-subtitle">Dự án sẽ được triển khai theo 3 giai đoạn để đảm bảo hiệu quả, kiểm soát rủi ro và tối ưu hóa chi phí đầu tư.</p>
+                <div class="relative">
+                    <div class="absolute left-1/2 h-full w-0.5 bg-gray-300 hidden md:block"></div>
+                    <div class="space-y-12">
+                        <div class="md:flex items-center w-full">
+                            <div class="md:w-1/2 md:pr-8">
+                                <div class="p-6 bg-blue-50 rounded-lg shadow-md border-l-4 border-blue-500">
+                                    <h3 class="font-bold text-xl text-blue-800">Giai đoạn 1: Proof of Concept (POC)</h3>
+                                    <p class="text-blue-700 mt-2">Xác thực tính khả thi của giải pháp trên một bộ dữ liệu nhỏ, xây dựng dashboard mẫu và ước tính chi phí thực tế.</p>
+                                </div>
+                            </div>
+                             <div class="hidden md:block absolute left-1/2 -ml-4 w-8 h-8 rounded-full bg-blue-500 border-4 border-white"></div>
+                        </div>
+
+                         <div class="md:flex items-center w-full">
+                            <div class="md:w-1/2 md:ml-auto md:pl-8">
+                               <div class="p-6 bg-green-50 rounded-lg shadow-md border-r-4 md:border-l-4 md:border-r-0 border-green-500">
+                                    <h3 class="font-bold text-xl text-green-800">Giai đoạn 2: Pilot</h3>
+                                    <p class="text-green-700 mt-2">Triển khai giải pháp cho một phòng ban hoặc một nhà máy. Thu thập phản hồi, tinh chỉnh mô hình và đánh giá hiệu quả kinh doanh.</p>
+                                </div>
+                            </div>
+                             <div class="hidden md:block absolute left-1/2 -ml-4 w-8 h-8 rounded-full bg-green-500 border-4 border-white"></div>
+                        </div>
+
+                        <div class="md:flex items-center w-full">
+                            <div class="md:w-1/2 md:pr-8">
+                                <div class="p-6 bg-purple-50 rounded-lg shadow-md border-l-4 border-purple-500">
+                                    <h3 class="font-bold text-xl text-purple-800">Giai đoạn 3: Production</h3>
+                                    <p class="text-purple-700 mt-2">Triển khai toàn diện trên toàn bộ tổ chức, tích hợp sâu vào quy trình vận hành và liên tục cải tiến, mở rộng các ứng dụng AI/ML mới.</p>
+                                </div>
+                            </div>
+                             <div class="hidden md:block absolute left-1/2 -ml-4 w-8 h-8 rounded-full bg-purple-500 border-4 border-white"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#1a2b48] text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024. Báo cáo Tầm nhìn Dữ liệu & AI cho ATAD. Được tạo cho mục đích minh họa.</p>
+        </div>
+    </footer>
+
+    <script>
+    function wrapLabel(label, maxCharsPerLine = 16) {
+        if (typeof label !== 'string' || label.length <= maxCharsPerLine) {
+            return label;
+        }
+        const words = label.split(' ');
+        let lines = [];
+        let currentLine = '';
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            if ((currentLine + word).length > maxCharsPerLine && currentLine !== '') {
+                lines.push(currentLine.trim());
+                currentLine = word + ' ';
+            } else {
+                currentLine += word + ' ';
+            }
+        }
+        lines.push(currentLine.trim());
+        return lines;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const biData = {
+            production: {
+                title: "Dashboard Hiệu suất Sản xuất & Vận hành",
+                description: "Theo dõi các chỉ số cốt lõi như Hiệu suất Thiết bị Tổng thể (OEE), tỷ lệ lỗi, năng suất và thời gian ngừng máy để xác định các điểm nghẽn và cơ hội cải tiến trong dây chuyền sản xuất.",
+                chartType: 'bar',
+                labels: ['Nhà máy 1', 'Nhà máy 2', 'Nhà máy 3', 'Nhà máy 4'],
+                datasets: [{
+                    label: 'OEE (%)',
+                    data: [85, 92, 78, 88],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            'supply-chain': {
+                title: "Dashboard Quản lý Chuỗi Cung ứng",
+                description: "Tối ưu hóa mức tồn kho, theo dõi hiệu suất nhà cung cấp và giám sát logistics để đảm bảo dòng chảy nguyên vật liệu thông suốt và giảm chi phí lưu kho.",
+                chartType: 'line',
+                labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                datasets: [{
+                    label: 'Số ngày tồn kho',
+                    data: [45, 42, 38, 35, 33, 30],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            finance: {
+                title: "Dashboard Phân tích Tài chính",
+                description: "Cung cấp cái nhìn tổng quan về sức khỏe tài chính, phân tích chi phí theo từng dự án và theo dõi xu hướng giá thép để hỗ trợ lập kế hoạch ngân sách và chiến lược giá.",
+                chartType: 'bar',
+                labels: ['Dự án A', 'Dự án B', 'Dự án C', 'Dự án D'],
+                datasets: [{
+                    label: 'Ngân sách (tỷ VND)',
+                    data: [120, 150, 90, 200],
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                }, {
+                    label: 'Chi phí thực tế (tỷ VND)',
+                    data: [115, 160, 95, 190],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                }]
+            },
+            'project-management': {
+                title: "Dashboard Quản lý Dự án",
+                description: "Theo dõi tiến độ, chi phí và hiệu suất phân bổ nguồn lực của từng dự án để đảm bảo hoàn thành đúng hạn và trong ngân sách, đặc biệt quan trọng với các dự án kết cấu thép quy mô lớn.",
+                chartType: 'bar',
+                labels: ['Dự án Alpha', 'Dự án Beta', 'Dự án Gamma', 'Dự án Delta'],
+                datasets: [{
+                    label: 'Tiến độ hoàn thành (%)',
+                    data: [90, 75, 50, 80],
+                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                }, {
+                    label: 'Phần trăm ngân sách đã sử dụng (%)',
+                    data: [85, 70, 45, 75],
+                    backgroundColor: 'rgba(201, 203, 207, 0.6)',
+                }]
+            },
+            'crm-sales': {
+                title: "Dashboard Hiệu suất Kinh doanh & CRM",
+                description: "Phân tích hiệu suất bán hàng, tỷ lệ chuyển đổi khách hàng tiềm năng và tình trạng hợp đồng để tối ưu hóa chiến lược kinh doanh và nâng cao giá trị vòng đời khách hàng.",
+                chartType: 'doughnut',
+                labels: ['Chuyển đổi thành công', 'Đang xử lý', 'Mất cơ hội'].map(label => wrapLabel(label)),
+                datasets: [{
+                    label: 'Tình trạng Lead (%)',
+                    data: [40, 35, 25],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
+                    ],
+                }]
+            },
+            hr: {
+                title: "Dashboard Quản trị Nhân sự",
+                description: "Phân tích tỷ lệ nghỉ việc, hiệu suất nhân viên và chi phí nhân sự để xây dựng chiến lược giữ chân nhân tài và tối ưu hóa nguồn lực con người.",
+                chartType: 'doughnut',
+                labels: ['Sản xuất', 'Kinh doanh', 'Dự án', 'Hành chính'],
+                datasets: [{
+                    label: 'Tỷ lệ nghỉ việc (%)',
+                    data: [12, 8, 5, 9],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                }]
+            }
+        };
+
+        const aiData = {
+            design: {
+                title: 'Tối ưu hóa Thiết kế bằng AI',
+                problem: 'Quy trình thiết kế truyền thống tốn nhiều thời gian và khó có thể tìm ra phương án tối ưu nhất về trọng lượng và chi phí trong hàng ngàn khả năng.',
+                solution: 'Sử dụng các kỹ thuật Generative Design. AI sẽ tự động tạo và đánh giá hàng nghìn phương án thiết kế dựa trên các ràng buộc kỹ thuật (tải trọng, tiêu chuẩn) để tìm ra giải pháp nhẹ nhất, rẻ nhất mà vẫn đảm bảo an toàn.',
+                value: 'Giảm đáng kể chi phí nguyên vật liệu (thép), rút ngắn thời gian thiết kế, và tạo ra các kết cấu sáng tạo, hiệu quả hơn.',
+                caseStudy: '**Case Study: Giảm 20% lượng thép cho dự án nhà xưởng**\nMột khách hàng yêu cầu thiết kế nhà xưởng công nghiệp với các thông số tải trọng và không gian cụ thể. Thay vì chỉ dựa vào kinh nghiệm và phần mềm truyền thống, ATAD áp dụng AI để tạo ra hàng trăm nghìn phương án thiết kế. AI đã xác định một cấu trúc tối ưu giúp giảm 20% lượng thép cần dùng so với thiết kế ban đầu mà vẫn đảm bảo đầy đủ các tiêu chuẩn kỹ thuật và an toàn, tiết kiệm đáng kể chi phí vật liệu cho khách hàng và tăng lợi nhuận cho ATAD.',
+                chart: {
+                    type: 'bubble',
+                    data: {
+                        datasets: [{
+                            label: 'Phương án Thiết kế do AI tạo ra',
+                            data: [
+                                { x: 20, y: 30, r: 15 }, { x: 22, y: 25, r: 10 },
+                                { x: 25, y: 35, r: 25 }, { x: 18, y: 22, r: 8 },
+                                { x: 30, y: 28, r: 20 },
+                            ],
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                        }, {
+                            label: 'Thiết kế truyền thống',
+                            data: [{ x: 28, y: 38, r: 22 }],
+                             backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: { title: { display: true, text: 'Chi phí (Đơn vị tương đối)' } },
+                            x: { title: { display: true, text: 'Trọng lượng (Tấn)' } }
+                        }
+                    }
+                }
+            },
+            maintenance: {
+                title: 'Bảo trì Dự đoán',
+                problem: 'Máy móc hỏng hóc đột xuất gây ngưng trệ sản xuất, tốn kém chi phí sửa chữa khẩn cấp và ảnh hưởng đến tiến độ giao hàng.',
+                solution: 'Phân tích dữ liệu từ cảm biến IoT (rung, nhiệt độ) trên máy móc theo thời gian thực. Mô hình ML sẽ học các mẫu hoạt động bình thường và dự báo thời điểm một thiết bị có khả năng hỏng hóc.',
+                value: 'Giảm thời gian ngừng máy đột xuất, tối ưu hóa chi phí và lịch trình bảo trì, kéo dài tuổi thọ tài sản.',
+                caseStudy: '**Case Study: Tránh được sự cố lớn của máy cắt CNC**\nATAD đã triển khai cảm biến rung và nhiệt độ lên máy cắt CNC chính. Hệ thống AI liên tục phân tích dữ liệu và phát hiện một sự gia tăng nhỏ nhưng liên tục về độ rung bất thường của một bộ phận. Dựa trên dự đoán của AI, đội ngũ bảo trì đã kiểm tra và phát hiện một vòng bi sắp hỏng hóc nghiêm trọng. Thay vì đợi máy dừng hoàn toàn (có thể mất cả ngày sản xuất), họ đã lên lịch thay thế bộ phận đó vào cuối tuần, giảm thiểu thời gian ngừng máy từ hàng chục giờ xuống chỉ còn 2 giờ bảo trì theo kế hoạch.',
+                chart: {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 30}, (_, i) => `Ngày ${i + 1}`),
+                        datasets: [{
+                            label: 'Độ rung máy cắt',
+                            data: [2, 2.1, 2, 2.2, 2.1, 2.3, 2.2, 2.4, 2.5, 2.6, 2.8, 3, 3.1, 3.3, 3.5, 4, 4.2, 4.5, 4.8, 5.2, 5.5, 6, 6.5, 7, 7.8, 8.5, 9.2, 10, 11, 12.5 ],
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            tension: 0.4
+                        },{
+                            label: 'Ngưỡng cảnh báo',
+                            data: Array(30).fill(5),
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }]
+                    },
+                    options: { scales: { y: { title: { display: true, text: 'Biên độ rung (mm)' } } } }
+                }
+            },
+            quality: {
+                title: 'Kiểm soát Chất lượng bằng Thị giác Máy tính',
+                problem: 'Việc kiểm tra chất lượng mối hàn hoặc khuyết tật bề mặt bằng mắt thường tốn nhiều công sức, không nhất quán và dễ bỏ sót lỗi.',
+                solution: 'Sử dụng camera độ phân giải cao và mô hình Computer Vision. AI được huấn luyện để tự động phát hiện các khuyết tật (vết nứt, rỗ, sai kích thước) trên sản phẩm với độ chính xác và tốc độ vượt trội.',
+                value: 'Đảm bảo chất lượng sản phẩm đồng đều, giảm thiểu phế phẩm, tăng uy tín thương hiệu và giải phóng nhân lực khỏi các công việc lặp đi lặp lại.',
+                caseStudy: '**Case Study: Giảm 30% phế phẩm mối hàn**\nTrong quy trình sản xuất dầm thép, việc kiểm tra chất lượng mối hàn là cực kỳ quan trọng. ATAD đã lắp đặt hệ thống camera AI dọc theo dây chuyền. Hệ thống này tự động quét và phân tích từng mối hàn. Ngay lập tức phát hiện các lỗi như rỗ khí, không đủ độ ngấu hoặc lệch mối hàn, và cảnh báo cho công nhân để sửa chữa ngay lập tức. Kết quả là giảm được 30% số lượng cấu kiện bị lỗi mối hàn cần làm lại, tiết kiệm thời gian và chi phí đáng kể.',
+                 chart: {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ca 1', 'Ca 2', 'Ca 3'],
+                        datasets: [{
+                            label: 'Lỗi phát hiện thủ công',
+                            data: [15, 18, 13],
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        }, {
+                            label: 'Lỗi phát hiện bằng AI',
+                            data: [22, 25, 20],
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        }]
+                    },
+                    options: {
+                        scales: { y: { beginAtZero: true, title: { display: true, text: 'Số lượng lỗi phát hiện' } } }
+                    }
+                }
+            },
+            'production-planning': {
+                title: 'Lập kế hoạch & Điều độ Sản xuất Động',
+                problem: 'Lịch trình sản xuất tĩnh không thể phản ứng linh hoạt với các sự cố bất ngờ (hỏng máy, đơn hàng khẩn) gây gián đoạn và lãng phí.',
+                solution: 'Sử dụng Học tăng cường (Reinforcement Learning) và các thuật toán tối ưu hóa để tạo lịch trình sản xuất tự động điều chỉnh theo thời gian thực khi có thay đổi (ví dụ: đơn hàng mới, máy hỏng, thiếu nguyên liệu).',
+                value: 'Tăng hiệu suất sử dụng máy móc và nhân lực, giảm thời gian chết, cải thiện tỷ lệ giao hàng đúng hạn và khả năng thích ứng với biến động thị trường.',
+                caseStudy: '**Case Study: Tăng 15% tỷ lệ giao hàng đúng hạn**\nTrước đây, việc lập kế hoạch sản xuất hàng ngày rất phức tạp do sự thay đổi liên tục của đơn hàng và đôi khi có sự cố máy móc. ATAD áp dụng AI để tạo lịch trình sản xuất động. Khi có một đơn hàng khẩn cấp hoặc một máy bị hỏng, hệ thống AI ngay lập tức tính toán lại và đề xuất lịch trình tối ưu mới, chỉ ra những điều chỉnh cần thiết. Điều này giúp ATAD tăng 15% tỷ lệ giao hàng đúng hạn, ngay cả khi đối mặt với những biến động không lường trước.',
+                chart: {
+                    type: 'bar',
+                    data: {
+                        labels: ['Trước tối ưu hóa', 'Sau tối ưu hóa'],
+                        datasets: [{
+                            label: 'Tỷ lệ sử dụng máy móc (%)',
+                            data: [65, 85],
+                            backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(75, 192, 192, 0.6)'],
+                        }]
+                    },
+                    options: {
+                        scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'Tỷ lệ sử dụng (%)' } } }
+                    }
+                }
+            },
+            'logistics-optimization': {
+                title: 'Tối ưu hóa Logistics Vận chuyển',
+                problem: 'Vận chuyển cấu kiện thép siêu trường, siêu trọng đến công trường là một bài toán logistics phức tạp, tốn kém chi phí nhiên liệu và thời gian.',
+                solution: 'Áp dụng thuật toán giải quyết Vehicle Routing Problem (VRP) và phân tích dữ liệu giao thông theo thời gian thực. AI sẽ tìm ra tuyến đường, phương thức và lịch trình vận chuyển tối ưu để giảm thiểu chi phí và thời gian.',
+                value: 'Giảm chi phí vận tải, đảm bảo giao hàng đúng tiến độ cho các dự án xây dựng, và cải thiện khả năng điều phối các lô hàng phức tạp.',
+                caseStudy: '**Case Study: Tiết kiệm 18% chi phí vận chuyển cho dự án miền Nam**\nĐối với một dự án lớn ở phía Nam, ATAD cần vận chuyển hàng trăm tấn cấu kiện thép từ nhà máy ra công trường. Hệ thống AI đã phân tích các yếu tố như kích thước, trọng lượng của từng cấu kiện, tình trạng giao thông thời gian thực, chi phí nhiên liệu, và năng lực của từng loại xe. AI đã đề xuất một kế hoạch kết hợp các chuyến xe, tối ưu hóa tải trọng và chọn tuyến đường hiệu quả nhất, giúp ATAD tiết kiệm 18% chi phí vận chuyển so với phương án thủ công và đảm bảo giao hàng đúng tiến độ.',
+                chart: {
+                    type: 'bar',
+                    data: {
+                        labels: ['Chi phí vận tải trung bình (trước tối ưu)', 'Chi phí vận tải trung bình (sau tối ưu)'].map(label => wrapLabel(label)),
+                        datasets: [{
+                            label: 'Chi phí (triệu VND)',
+                            data: [150, 100],
+                            backgroundColor: ['rgba(255, 159, 64, 0.6)', 'rgba(54, 162, 235, 0.6)'],
+                        }]
+                    },
+                    options: {
+                        scales: { y: { beginAtZero: true, title: { display: true, text: 'Chi phí (triệu VND)' } } }
+                    }
+                }
+            },
+            'financial-risk': {
+                title: 'Phân tích Rủi ro Tài chính & Tín dụng',
+                problem: 'Rủi ro tài chính từ khách hàng hoặc đối tác không đáng tin cậy có thể dẫn đến nợ xấu, tổn thất đáng kể và ảnh hưởng dòng tiền của ATAD.',
+                solution: 'Xây dựng mô hình phân loại dựa trên dữ liệu tài chính lịch sử của khách hàng/đối tác, lịch sử thanh toán, điểm tín dụng và thông tin ngành. AI sẽ đánh giá khả năng vỡ nợ của đối tác.',
+                value: 'Giảm thiểu rủi ro nợ xấu, cải thiện quản lý công nợ, hỗ trợ quyết định cho vay hoặc hợp tác kinh doanh một cách chủ động và dựa trên dữ liệu.',
+                caseStudy: '**Case Study: Giảm 40% nợ quá hạn từ đối tác mới**\nTrước khi ký kết hợp đồng lớn với một nhà thầu phụ mới, ATAD sử dụng hệ thống AI để đánh giá rủi ro tín dụng. AI phân tích lịch sử tài chính của nhà thầu, các hợp đồng trước đây, và thông tin ngành, sau đó cảnh báo về một số dấu hiệu rủi ro tiềm ẩn về thanh toán. Nhờ thông tin này, ATAD đã điều chỉnh điều khoản thanh toán, yêu cầu bảo lãnh chặt chẽ hơn. Điều này giúp công ty tránh được tình trạng nợ quá hạn lớn, giảm 40% tỷ lệ nợ quá hạn từ các đối tác mới so với các dự án trước đây.',
+                chart: {
+                    type: 'bar',
+                    data: {
+                        labels: ['Khách hàng rủi ro cao', 'Khách hàng rủi ro trung bình', 'Khách hàng rủi ro thấp'].map(label => wrapLabel(label)),
+                        datasets: [{
+                            label: 'Tỷ lệ khách hàng (%)',
+                            data: [15, 30, 55],
+                            backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(255, 205, 86, 0.7)', 'rgba(75, 192, 192, 0.7)'],
+                        }]
+                    },
+                    options: {
+                        scales: { y: { beginAtZero: true, stacked: true, title: { display: true, text: 'Tỷ lệ khách hàng (%)' } } }
+                    }
+                }
+            },
+            safety: {
+                title: 'Giám sát An toàn Lao động',
+                problem: 'Môi trường nhà máy và công trường luôn tiềm ẩn rủi ro tai nạn. Việc giám sát thủ công không thể bao quát hết mọi khu vực 24/7.',
+                solution: 'Phân tích video từ camera an ninh bằng AI. Hệ thống có thể tự động phát hiện các hành vi vi phạm quy tắc an toàn (không đội mũ bảo hiểm, đi vào khu vực cấm) và gửi cảnh báo tức thì.',
+                value: 'Giảm thiểu tai nạn lao động, bảo vệ sức khỏe người lao động, xây dựng văn hóa an toàn và giảm chi phí liên quan đến tai nạn.',
+                caseStudy: '**Case Study: Giảm 25% tai nạn lao động nhỏ**\nTại một khu vực nguy hiểm trong nhà máy, nơi yêu cầu công nhân phải luôn đội mũ bảo hiểm và có dây an toàn. Hệ thống camera AI được triển khai để giám sát liên tục. Khi phát hiện một công nhân không tuân thủ quy định, hệ thống sẽ gửi cảnh báo tức thì đến quản lý và công nhân đó thông qua thiết bị đeo tay. Điều này đã giúp giảm 25% các vụ tai nạn lao động nhỏ liên quan đến việc không tuân thủ thiết bị bảo hộ cá nhân, tạo ra một môi trường làm việc an toàn hơn rõ rệt.',
+                chart: {
+                    type: 'pie',
+                    data: {
+                        labels: ['Không đội mũ bảo hiểm', 'Vào khu vực cấm', 'Vận hành sai quy trình', 'Các vi phạm khác'].map(label => wrapLabel(label)),
+                        datasets: [{
+                            label: 'Phân loại Vi phạm An toàn',
+                            data: [45, 25, 20, 10],
+                             backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(255, 159, 64, 0.7)',
+                                'rgba(255, 205, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                            ],
+                        }]
+                    },
+                    options: {}
+                }
+            }
+        };
+
+        let biChartInstance;
+        let aiChartInstance;
+
+        function renderBiChart(target) {
+            if (biChartInstance) {
+                biChartInstance.destroy();
+            }
+            const ctx = document.getElementById('biChart').getContext('2d');
+            const data = biData[target];
+            document.getElementById('bi-title').innerText = data.title;
+            document.getElementById('bi-description').innerText = data.description;
+            
+            biChartInstance = new Chart(ctx, {
+                type: data.chartType,
+                data: {
+                    labels: data.labels,
+                    datasets: data.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    return Array.isArray(label) ? label.join(' ') : label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderAiChart(target) {
+            if (aiChartInstance) {
+                aiChartInstance.destroy();
+            }
+            const data = aiData[target];
+            document.getElementById('ai-title').innerText = data.title;
+            document.getElementById('ai-problem').innerText = data.problem;
+            document.getElementById('ai-solution').innerText = data.solution;
+            document.getElementById('ai-value').innerText = data.value;
+            document.getElementById('ai-case-study').innerHTML = data.caseStudy;
+
+            if (data.chart) {
+                document.getElementById('ai-chart-container').style.display = 'block';
+                const ctx = document.getElementById('aiChart').getContext('2d');
+                aiChartInstance = new Chart(ctx, {
+                    type: data.chart.type,
+                    data: data.chart.data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        ...data.chart.options,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                             tooltip: {
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        const item = tooltipItems[0];
+                                        let label = item.chart.data.labels[item.dataIndex];
+                                        return Array.isArray(label) ? label.join(' ') : label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                 document.getElementById('ai-chart-container').style.display = 'none';
+            }
+        }
+
+
+        document.querySelectorAll('.bi-tab').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.bi-tab').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                renderBiChart(this.dataset.target);
+            });
+        });
+
+        document.querySelectorAll('.ai-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.ai-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                renderAiChart(this.dataset.ai);
+            });
+        });
+
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.onscroll = () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        };
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        renderBiChart('production');
+        renderAiChart('design');
+
+    });
+    </script>
+</body>
+</html>
